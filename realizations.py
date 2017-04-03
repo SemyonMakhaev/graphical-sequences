@@ -85,22 +85,28 @@ def get_realizations(stack):
         realizations.append(current)
         for this_edge in current.edges():
             for that_edge in current.edges():
-                switched = swap(current, this_edge, that_edge)
-                need_to_append = True
-                for realization in realizations:
-                    if networkx.is_isomorphic(switched, realization):
-                        need_to_append = False
-                        break
-                if need_to_append:
-                    stack.append(switched)
+                if intersect_edges(this_edge, that_edge, graph):
+                    swapped = swap(current, this_edge, that_edge)
+                    need_to_append = True
+                    for realization in realizations:
+                        if networkx.is_isomorphic(swapped, realization):
+                            need_to_append = False
+                            break
+                    if need_to_append:
+                        stack.append(swapped)
     return realizations
+
+
+def intersect_edges(this_edge, that_edge, graph):
+    """Проверяет совпадение инцидентных рёбрам вершин"""
+    return False# TODO
 
 
 def swap(graph, this_edge, that_edge):
     """Переключение рёбер."""
-    switched = graph.copy()
+    swapped = graph.copy()
     # TODO: осуществить переключение
-    return switched
+    return swapped
 
 
 def print_realizations(realizations):
