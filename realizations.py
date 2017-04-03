@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Модуль для порождения реализаций графических разбиений."""
 from argparse import ArgumentParser
-from logging import error, warning
+from logging import error
 from shutil import rmtree
 from os import path, makedirs
 from matplotlib import pyplot
 
+import sys
 import networkx
 
 
@@ -56,18 +57,23 @@ def is_correct(sequence):
 
 def get_realization(sequence):
     """Порождает одну реализацию данного разбиения."""
-    graph = networkx.Graph()
+    numbered_sequence = list(sequence)
     for i in range(len(sequence)):
-        for j in range(i+1, len(sequence)):
-            if sequence[i] <= 0:
+        numbered_sequence[i] = [sequence[i], i]
+    graph = networkx.Graph()
+    for _ in range(len(numbered_sequence)):
+        for idx in range(1, len(numbered_sequence)):
+            if numbered_sequence[0][0] <= 0:
                 break
-            if i != j and sequence[j] > 0:
-                sequence[i] -= 1
-                sequence[j] -= 1
-                graph.add_edge(i, j)
-    for item in sequence:
-        if item != 0:
+            if numbered_sequence[idx][0] > 0:
+                numbered_sequence[0][0] -= 1
+                numbered_sequence[idx][0] -= 1
+                graph.add_edge(numbered_sequence[0][1], numbered_sequence[idx][1])
+        numbered_sequence.sort(key=lambda items: items[0], reverse=True)
+    for items in numbered_sequence:
+        if items[0] != 0:
             error('Разбиние не графично')
+            sys.exit(0)
     return graph
 
 
@@ -79,10 +85,10 @@ def get_realizations(stack):
         realizations.append(current)
         for this_edge in current.edges():
             for that_edge in current.edges():
-                switched = switch(current, this_edge, that_edge)
+                switched = swap(current, this_edge, that_edge)
                 need_to_append = True
                 for realization in realizations:
-                    if are_isomorphous(switched, realization):
+                    if networkx.is_isomorphic(switched, realization):
                         need_to_append = False
                         break
                 if need_to_append:
@@ -90,16 +96,11 @@ def get_realizations(stack):
     return realizations
 
 
-def switch(graph, this_edge, that_edge):
+def swap(graph, this_edge, that_edge):
     """Переключение рёбер."""
     switched = graph.copy()
     # TODO: осуществить переключение
     return switched
-
-
-def are_isomorphous(this_graph, that_graph):
-    """Определяет, изоморфны ли две реализации."""
-    pass# TODO
 
 
 def print_realizations(realizations):
@@ -126,7 +127,8 @@ def make_directory():
             rmtree(PICTURES_DIRECTORY)
         makedirs(PICTURES_DIRECTORY)
     except Exception:
-        warning('Ошибка при создании директории')
+        error('Ошибка при создании директории')
+        sys.exit(0)
 
 
 if __name__ == '__main__':
