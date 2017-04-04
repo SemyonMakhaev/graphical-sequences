@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Модуль для порождения реализаций графических разбиений."""
 from argparse import ArgumentParser
+from time import time
 from logging import error
 from shutil import rmtree
 from os import path, makedirs
@@ -19,12 +20,17 @@ FONT_SIZE = 14
 def main():
     """Порождает все реализации данного разбиения."""
     sequence, directory, debug = argument_parse()
+    start = time()
+    sequence.sort(reverse=True)
     if not is_correct(sequence):
         error('Неверно задано разбиение')
+        sys.exit(0)
     realization = get_realization(sequence)
     realizations = get_realizations(realization)
+    finish = time()
     if debug:
         assert isomorphic_pair(realizations) is None
+        print("Реализации построены за {}мс".format(finish - start))
     print_realizations(realizations, directory)
 
 
@@ -46,9 +52,7 @@ def argument_parse():
 def read_sequence(filename):
     """Читает графическое разбиение из файла."""
     with open(filename, mode='r', encoding='utf-8') as file:
-        sequence = [int(degree) for degree in file.read().split(' ')]
-        sequence.sort(reverse=True)
-        return sequence
+        return [int(degree) for degree in file.read().split(' ')]
 
 
 def is_correct(sequence):
@@ -69,7 +73,8 @@ def get_realization(sequence):
         for idx in range(1, len(numbered_sequence)):
             if numbered_sequence[0][0] <= 0:
                 break
-            if numbered_sequence[idx][0] > 0:
+            if numbered_sequence[idx][0] > 0 and not graph.has_edge( \
+                        numbered_sequence[idx][1], numbered_sequence[0][1]):
                 numbered_sequence[0][0] -= 1
                 numbered_sequence[idx][0] -= 1
                 graph.add_edge(numbered_sequence[0][1], numbered_sequence[idx][1])
@@ -110,10 +115,16 @@ def intersect_edges(this_edge, that_edge):
 def swap(graph, this_edge, that_edge):
     """Переключение рёбер."""
     swapped = graph.copy()
+    had_edge = swapped.has_edge(this_edge[0], that_edge[0]) or \
+            swapped.has_edge(this_edge[1], that_edge[1])
     swapped.remove_edge(*this_edge)
     swapped.remove_edge(*that_edge)
-    swapped.add_edge(this_edge[0], that_edge[1])
-    swapped.add_edge(this_edge[1], that_edge[0])
+    if had_edge:
+        swapped.add_edge(this_edge[0], that_edge[1])
+        swapped.add_edge(this_edge[1], that_edge[0])
+    else:
+        swapped.add_edge(this_edge[0], that_edge[0])
+        swapped.add_edge(this_edge[1], that_edge[1])
     return swapped
 
 

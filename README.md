@@ -5,15 +5,15 @@
 Семён Махаев, КБ-301
 
 ## Использование
-python3 realizations.py [-h] [-dir directory] [-d] degree [degree ...]
+python realizations.py [-h] [-dir directory] [-d] degree [degree ...]
 
 #### Позиционные аргументы
-degree - Степень очередной вершины графического разбиения
+* degree - Степень очередной вершины графического разбиения
 
 #### Опциональные аргументы
--h, --help - Вывод справки
--dir directory, --directory directory - Директория для вывода картинок
--d, --debug - Запуск дополнительных проверок
+* -h, --help - Вывод справки
+* -dir directory, --directory directory - Директория для вывода картинок
+* -d, --debug - Запуск дополнительных проверок
 
 #### Запуск тестов
 python tests.py
