@@ -22,10 +22,10 @@ def main():
     if not is_correct(sequence):
         error('Неверно задано разбиение')
     realization = get_realization(sequence)
-    # realizations = get_realizations([realization])
+    realizations = get_realizations([realization])
     make_directory()
-    # print_realizations(realizations)
-    print_graph(realization, 1)# TODO: удалить
+    print_realizations(realizations)
+    # print_graph(realization, 1)
 
 
 def argument_parse():
@@ -85,7 +85,7 @@ def get_realizations(stack):
         realizations.append(current)
         for this_edge in current.edges():
             for that_edge in current.edges():
-                if intersect_edges(this_edge, that_edge, graph):
+                if not intersect_edges(this_edge, that_edge):
                     swapped = swap(current, this_edge, that_edge)
                     need_to_append = True
                     for realization in realizations:
@@ -97,15 +97,22 @@ def get_realizations(stack):
     return realizations
 
 
-def intersect_edges(this_edge, that_edge, graph):
+def intersect_edges(this_edge, that_edge):
     """Проверяет совпадение инцидентных рёбрам вершин"""
-    return False# TODO
+    for this_vertex in this_edge:
+        for that_vertex in that_edge:
+            if this_vertex == that_vertex:
+                return True
+    return False
 
 
 def swap(graph, this_edge, that_edge):
     """Переключение рёбер."""
     swapped = graph.copy()
-    # TODO: осуществить переключение
+    swapped.remove_edge(*this_edge)
+    swapped.remove_edge(*that_edge)
+    swapped.add_edge(this_edge[0], that_edge[0])
+    swapped.add_edge(this_edge[1], that_edge[1])
     return swapped
 
 
