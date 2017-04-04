@@ -18,13 +18,14 @@ FONT_SIZE = 14
 
 def main():
     """Порождает все реализации данного разбиения."""
-    sequence = argument_parse()
+    sequence, directory, debug = argument_parse()
     if not is_correct(sequence):
         error('Неверно задано разбиение')
     realization = get_realization(sequence)
     realizations = get_realizations(realization)
-    make_directory()
-    print_realizations(realizations)
+    if debug:
+        assert isomorphic_pair(realizations) is None
+    print_realizations(realizations, directory)
 
 
 def argument_parse():
@@ -32,10 +33,14 @@ def argument_parse():
     parser = ArgumentParser(prog='python3 realizations.py', \
         description='Программа порождает все реализации данного графического разбиения', \
         epilog='(c) Семён Махаев, 2017.')
+    parser.add_argument('-dir', '--directory', type=str, default=PICTURES_DIRECTORY, \
+        help='Директория для вывода картинок')
     parser.add_argument('degree', type=int, nargs='+', \
         help='Степень очередной вершины графического разбиения')
+    parser.add_argument('-d', '--debug', action='store_true', \
+        help='Запуск дополнительных проверок')
     args = parser.parse_args()
-    return args.degree
+    return args.degree, args.directory, args.debug
 
 
 def read_sequence(filename):
@@ -123,32 +128,44 @@ def some(iterable, func):
     return False
 
 
-def print_realizations(realizations):
+def print_realizations(realizations, directory):
     """Сохраняет картинки с порждёнными реализациями."""
+    make_directory(directory)
     for idx in range(len(realizations)):
-        print_graph(realizations[idx], idx+1)
+        print_graph(realizations[idx], idx+1, directory)
 
 
-def print_graph(graph, number):
+def print_graph(graph, number, directory):
     """Сохраняет текущую реализацию в виде изображения."""
     layout = networkx.shell_layout(graph)
     networkx.draw_networkx_nodes(graph, layout, node_size=NODE_SIZE)
     networkx.draw_networkx_edges(graph, layout, width=EDGE_WIDTH)
     networkx.draw_networkx_labels(graph, layout, font_size=FONT_SIZE, font_family='serif')
     pyplot.axis('off')
-    pyplot.savefig(path.join(PICTURES_DIRECTORY, '{}.png'.format(number)))
+    pyplot.savefig(path.join(directory, '{}.png'.format(number)))
     pyplot.clf()
 
 
-def make_directory():
+def make_directory(directory):
     """Создаёт папку для сохранения изображений."""
     try:
-        if path.exists(PICTURES_DIRECTORY):
-            rmtree(PICTURES_DIRECTORY)
-        makedirs(PICTURES_DIRECTORY)
+        if path.exists(directory):
+            rmtree(directory)
+        makedirs(directory)
     except Exception:
         error('Ошибка при создании директории')
         sys.exit(0)
+
+
+def isomorphic_pair(realizations):
+    """Возвращает пару изоморфных реализаций, если они есть."""
+    for this_realization in realizations:
+        for that_realization in realizations:
+            if this_realization != that_realization and \
+                    networkx.is_isomorphic(this_realization, \
+                            that_realization):
+                return this_realization, that_realization
+    return None
 
 
 if __name__ == '__main__':
