@@ -22,10 +22,9 @@ def main():
     if not is_correct(sequence):
         error('Неверно задано разбиение')
     realization = get_realization(sequence)
-    realizations = get_realizations([realization])
+    realizations = get_realizations(realization)
     make_directory()
     print_realizations(realizations)
-    # print_graph(realization, 1)
 
 
 def argument_parse():
@@ -77,23 +76,20 @@ def get_realization(sequence):
     return graph
 
 
-def get_realizations(stack):
+def get_realizations(realization):
     """Получает все реализации по одной из них."""
-    realizations = []
+    stack = [realization]
+    realizations = [realization]
     while len(stack) > 0:
         current = stack.pop()
-        realizations.append(current)
         for this_edge in current.edges():
             for that_edge in current.edges():
                 if not intersect_edges(this_edge, that_edge):
                     swapped = swap(current, this_edge, that_edge)
-                    need_to_append = True
-                    for realization in realizations:
-                        if networkx.is_isomorphic(swapped, realization):
-                            need_to_append = False
-                            break
-                    if need_to_append:
+                    if not some(realizations, lambda item: \
+                                    networkx.is_isomorphic(swapped, item)):
                         stack.append(swapped)
+                        realizations.append(swapped)
     return realizations
 
 
@@ -111,15 +107,26 @@ def swap(graph, this_edge, that_edge):
     swapped = graph.copy()
     swapped.remove_edge(*this_edge)
     swapped.remove_edge(*that_edge)
-    swapped.add_edge(this_edge[0], that_edge[0])
-    swapped.add_edge(this_edge[1], that_edge[1])
+    swapped.add_edge(this_edge[0], that_edge[1])
+    swapped.add_edge(this_edge[1], that_edge[0])
     return swapped
+
+
+def some(iterable, func):
+    """
+    Возвращает True, если хотя бы для одного элемента
+    переданная функция возвращает True.
+    """
+    for item in iterable:
+        if func(item):
+            return True
+    return False
 
 
 def print_realizations(realizations):
     """Сохраняет картинки с порждёнными реализациями."""
     for idx in range(len(realizations)):
-        print_graph(realizations[idx], idx)
+        print_graph(realizations[idx], idx+1)
 
 
 def print_graph(graph, number):
