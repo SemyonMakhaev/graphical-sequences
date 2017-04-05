@@ -15,6 +15,9 @@ python3 realizations.py [-h] [-dir directory] [-d] degree [degree ...]
 * -dir directory, --directory directory - Директория для вывода картинок
 * -d, --debug - Запуск дополнительных проверок
 
+#### Запуск утилиты для построения графика зависимости времени работы программы от длины разбиения
+python3 measure.py [length]
+
 #### Запуск тестов
 python3 tests.py
 
