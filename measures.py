@@ -1,16 +1,21 @@
 """Засекает время работы программы и чертит график."""
 from time import time
 from argparse import ArgumentParser
+from logging import warning
 from matplotlib import pyplot
 from realizations import get_realization, get_realizations
 
 
+DEFAULT_LENGTH = 10
 DEFAULT_SEQUENCES = {1: [0], 2: [1, 1], 3: [1, 1, 2]}
 
 
 def main():
     """Измерение времени работы программы и построение графика."""
     length = argument_parsing()
+    if length < 1:
+        warning('Неверное значение длины. Установлено значение по умолчанию')
+        length = DEFAULT_LENGTH
     values = get_values(length)
     draw_diagram(values)
 
@@ -21,7 +26,7 @@ def argument_parsing():
         description='Утилита для построения графика зависимости времени \
                 работы программы от длины разбиения', \
         epilog='(c) Семён Махаев, 2017.')
-    parser.add_argument('length', type=int, nargs='?', default=10, \
+    parser.add_argument('length', type=int, nargs='?', default=DEFAULT_LENGTH, \
         help='Максимальная длина разбиения')
     return parser.parse_args().length
 
@@ -29,7 +34,7 @@ def argument_parsing():
 def get_values(length):
     """Получает время работы на входе длины, не превосходящей заданную."""
     values = {}
-    for current in range(1, length):
+    for current in range(1, length+1):
         sequence = get_sequence(current)
         value = measure(sequence)
         values[len(sequence)] = value
