@@ -2,6 +2,7 @@
 from time import time
 from argparse import ArgumentParser
 from logging import warning
+from pylab import gcf
 from matplotlib import pyplot
 from realizations import get_realization, get_realizations
 
@@ -66,6 +67,7 @@ def draw_diagram(values):
     pyplot.xlabel('длина разбиения')
     pyplot.ylabel('время работы, сек')
     pyplot.grid(True)
+    gcf().canvas.set_window_title('Измерения')
     pyplot.show()
 
 
