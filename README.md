@@ -5,7 +5,7 @@
 Семён Махаев, КБ-301
 
 ## Использование
-python realizations.py [-h] [-dir directory] [-d] degree [degree ...]
+python3 realizations.py [-h] [-dir directory] [-d] degree [degree ...]
 
 #### Позиционные аргументы
 * degree - Степень очередной вершины графического разбиения
@@ -16,13 +16,8 @@ python realizations.py [-h] [-dir directory] [-d] degree [degree ...]
 * -d, --debug - Запуск дополнительных проверок
 
 #### Запуск тестов
-python tests.py
+python3 tests.py
 
 ## Зависимости
 * networkx
 * matplotlib.pyplot
-* argparse
-* os
-* shutil
-* logging
-* unittest

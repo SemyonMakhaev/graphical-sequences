@@ -66,9 +66,11 @@ def is_correct(sequence):
 def get_realization(sequence):
     """Порождает одну реализацию данного разбиения."""
     numbered_sequence = list(sequence)
+    graph = networkx.Graph()
     for i in range(len(sequence)):
         numbered_sequence[i] = [sequence[i], i]
-    graph = networkx.Graph()
+        if sequence[i] == 0:
+            graph.add_node(i)
     for _ in range(len(numbered_sequence)):
         for idx in range(1, len(numbered_sequence)):
             if numbered_sequence[0][0] <= 0:
