@@ -1,6 +1,5 @@
 """Засекает время работы программы и чертит график."""
-from time import time
-from datetime import date
+from datetime import datetime
 from os import sep, path, makedirs
 from argparse import ArgumentParser
 from logging import warning
@@ -67,8 +66,8 @@ def draw_diagram(values, save):
     if save:
         if not path.exists(MEASURES_DIRECTORY):
             makedirs(MEASURES_DIRECTORY)
-        pyplot.savefig('./{}{}{}-{}.png'.format(MEASURES_DIRECTORY, sep, \
-                                    str(date.today()), time()))
+        pyplot.savefig('{}{}{:%Y-%m-%d_%H-%M-%S}.png'.format(\
+                                MEASURES_DIRECTORY, sep, datetime.now()))
         print('Изображение сохранено в папку {}'.format(MEASURES_DIRECTORY))
     else:
         gcf().canvas.set_window_title('Измерения')
