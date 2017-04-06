@@ -16,7 +16,7 @@ python3 realizations.py [-h] [-dir directory] [-d] degree [degree ...]
 * -d, --debug - Запуск дополнительных проверок
 
 #### Запуск утилиты для построения графика зависимости времени работы программы от длины разбиения
-python3 measure.py [length]
+python3 measure.py [-h] [-s] [length]
 
 #### Запуск тестов
 python3 tests.py

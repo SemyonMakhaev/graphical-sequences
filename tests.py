@@ -1,7 +1,7 @@
 """Тесты для реализаций графических последовательностей."""
 from unittest import TestCase, main
 from networkx import Graph
-from realizations import get_realization, get_realizations, \
+from realizations import get_realization, generate_realizations, \
     is_correct, intersect_edges, swap, some, isomorphic_pair
 
 
@@ -22,7 +22,7 @@ class RealizationsTests(TestCase):
                         len(get_realization(sequence).edges()))
 
 
-    def test_get_realizations(self):
+    def test_generate_realizations(self):
         """
         Тесты для получения всех реализаций
         по одной данной реализации.
@@ -34,8 +34,7 @@ class RealizationsTests(TestCase):
             (3, 2, 1, 1, 1): 1, \
             (2, 2, 2, 2, 1, 1, 1, 1): 5}
         for sequence in count:
-            graph = get_realization(sequence)
-            self.assertEqual(count[sequence], len(get_realizations(graph)))
+            self.assertEqual(count[sequence], len(generate_realizations(list(sequence))[0]))
 
 
     def test_is_correct(self):

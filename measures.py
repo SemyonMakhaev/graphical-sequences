@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from logging import warning
 from pylab import gcf
 from matplotlib import pyplot
-from realizations import get_realization, get_realizations
+from realizations import generate_realizations
 
 
 MEASURES_DIRECTORY = 'measures'
@@ -43,7 +43,7 @@ def get_values(length):
     values = {}
     for current in range(1, length+1):
         sequence = get_sequence(current)
-        value = measure(sequence)
+        value = generate_realizations(sequence)[1]
         values[len(sequence)] = value
         print('{}: {} сек'.format(len(sequence), value))
     return values
@@ -55,15 +55,6 @@ def get_sequence(length):
         return DEFAULT_SEQUENCES[length]
     else:
         return [2] * length
-
-
-def measure(sequence):
-    """Измеряет время работы для заданного разбиения."""
-    start = time()
-    sequence.sort(reverse=True)
-    realization = get_realization(sequence)
-    get_realizations(realization)
-    return time() - start
 
 
 def draw_diagram(values, save):

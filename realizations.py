@@ -20,17 +20,10 @@ FONT_SIZE = 14
 def main():
     """Порождает все реализации данного разбиения."""
     sequence, directory, debug = argument_parse()
-    start = time()
-    sequence.sort(reverse=True)
-    if not is_correct(sequence):
-        error('Неверно задано разбиение')
-        sys.exit(0)
-    realization = get_realization(sequence)
-    realizations = get_realizations(realization)
-    finish = time()
+    realizations, measure = generate_realizations(sequence)
     if debug:
         assert isomorphic_pair(realizations) is None
-        print("Реализации построены за {} сек".format(finish - start))
+        print("Реализации построены за {} сек".format(measure))
     print_realizations(realizations, directory)
 
 
@@ -53,6 +46,18 @@ def read_sequence(filename):
     """Читает графическое разбиение из файла."""
     with open(filename, mode='r', encoding='utf-8') as file:
         return [int(degree) for degree in file.read().split(' ')]
+
+
+def generate_realizations(sequence):
+    """Запускает основной алгоритм. Измеряет время работы."""
+    start = time()
+    sequence.sort(reverse=True)
+    if not is_correct(sequence):
+        error('Неверно задано разбиение')
+        sys.exit(0)
+    realization = get_realization(sequence)
+    realizations = get_all_realizations_on_set(realization)
+    return realizations, time() - start
 
 
 def is_correct(sequence):
@@ -88,7 +93,7 @@ def get_realization(sequence):
     return graph
 
 
-def get_realizations(realization):
+def get_all_realizations(realization):
     """Получает все реализации по одной из них."""
     stack = [realization]
     realizations = [realization]
@@ -103,6 +108,38 @@ def get_realizations(realization):
                         stack.append(swapped)
                         realizations.append(swapped)
     return realizations
+
+
+def get_all_realizations_on_set(realization):
+    """
+    Оптимизация основного алгиритма, основанная на
+    предварительной генерации всех необходимых пар рёбер.
+    """
+    stack = [realization]
+    realizations = [realization]
+    while len(stack) > 0:
+        current = stack.pop()
+        for pair in get_not_intersected_edges_pairs(current):
+            swapped = swap(current, *pair)
+            if not some(realizations, lambda item: \
+                                networkx.is_isomorphic(swapped, item)):
+                stack.append(swapped)
+                realizations.append(swapped)
+    return realizations
+
+
+def get_not_intersected_edges_pairs(graph):
+    """
+    Находит в переданном графе все пары
+    непересекающихся неориентированных рёбер.
+    """
+    seen = set()
+    return [(this_edge, that_edge) for this_edge in graph.edges() \
+            for that_edge in graph.edges() \
+            if not intersect_edges(this_edge, that_edge) and \
+            not (this_edge, that_edge) in seen and \
+            not (that_edge, this_edge) in seen and \
+            not seen.add((this_edge, that_edge))]
 
 
 def intersect_edges(this_edge, that_edge):
