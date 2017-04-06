@@ -30,7 +30,7 @@ def main():
     finish = time()
     if debug:
         assert isomorphic_pair(realizations) is None
-        print("Реализации построены за {} мс".format(finish - start))
+        print("Реализации построены за {} сек".format(finish - start))
     print_realizations(realizations, directory)
 
 
