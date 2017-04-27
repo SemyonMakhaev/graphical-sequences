@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Засекает время работы программы и чертит график."""
 from datetime import datetime
 from os import sep, path, makedirs

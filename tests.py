@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Тесты для реализаций графических последовательностей."""
 from unittest import TestCase, main
 from networkx import Graph
